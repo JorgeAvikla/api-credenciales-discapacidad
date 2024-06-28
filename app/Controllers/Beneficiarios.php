@@ -17,14 +17,11 @@ use Endroid\QrCode\RoundBlockSizeMode;
 use Endroid\QrCode\Writer\PngWriter;
 
 helper("date");
+helper('jwt');
+
 
 class Beneficiarios extends ResourceController
 {
-    private function getKey()
-    {
-        return "my_application_secret";
-    }
-
     public function login()
     {
         $rules = [
@@ -48,7 +45,7 @@ class Beneficiarios extends ResourceController
             $datos_usuario = $modelo_beneficiario->obtener_id_por_curp(strtoupper(trim($this->request->getVar("curp"))));
             if (!empty($datos_usuario)) {
                 if ($this->request->getVar("folio") === $datos_usuario['folio']) {
-                    $key = $this->getKey();
+                    $key = getKey();
                     $iat = time(); // current timestamp value
                     $nbf = $iat + 10;
                     $exp = $iat + 31536000;
@@ -82,8 +79,8 @@ class Beneficiarios extends ResourceController
 
     public function datos_credencial()
     {
-        $key = $this->getKey();
-        $authHeader = $this->request->getHeader("Authorization");
+        $key = getKey();
+        $authHeader = $this->request->header("Authorization");
         if ($authHeader === NULL) {
             return $this->failUnauthorized("Token no valido", 'Unauthorized');
         } else {
@@ -101,13 +98,8 @@ class Beneficiarios extends ResourceController
                 $decoded->data =  $datos_credencial;
                 $decoded->aud = $datos_credencial['curp'];
                 $discapacidades  = $modelo_benficiarios_discapacidad_model->obtener_discapacidades($datos_credencial['id_beneficiario']);
-                $decoded->data['discapacidades'] = $discapacidades;
-                $response = [
-                    'status' => 200,
-                    'error' => false,
-                    'messages' => 'Datos beneficiario',
-                    'data' => [$decoded]
-                ];
+                $datos_credencial['discapacidades'] = $discapacidades;
+                $response = ['data' => $datos_credencial];
                 return $this->respondCreated($response);
             }
         } catch (Exception $ex) {
@@ -116,8 +108,8 @@ class Beneficiarios extends ResourceController
     }
     public function actualizar_token_firebase()
     {
-        $key = $this->getKey();
-        $authHeader = $this->request->getHeader("Authorization");
+        $key = getKey();
+        $authHeader = $this->request->header("Authorization");
         if ($authHeader === NULL) {
             return $this->failUnauthorized("Token no valido", 'Unauthorized');
         } else {
@@ -173,8 +165,8 @@ class Beneficiarios extends ResourceController
 
     public function todos_los_beneficiarios()
     {
-        $key = $this->getKey();
-        $authHeader = $this->request->getHeader("Authorization");
+        $key = getKey();
+        $authHeader = $this->request->header("Authorization");
         if ($authHeader->getValue() != null) {
             $authHeader = $authHeader->getValue();
             $token = $authHeader;
@@ -340,8 +332,8 @@ class Beneficiarios extends ResourceController
 
     public function obtener_datos_edicion_beneficiario($id_benficiario)
     {
-        $key = $this->getKey();
-        $authHeader = $this->request->getHeader("Authorization");
+        $key = getKey();
+        $authHeader = $this->request->header("Authorization");
         if ($authHeader->getValue() != null) {
             $authHeader = $authHeader->getValue();
             $token = $authHeader;
@@ -440,8 +432,8 @@ class Beneficiarios extends ResourceController
             ]
         ];
         if ($this->validate($rules, $messages)) {
-            $key = $this->getKey();
-            $authHeader = $this->request->getHeader("Authorization");
+            $key = getKey();
+            $authHeader = $this->request->header("Authorization");
             if ($authHeader->getValue() != null) {
                 $authHeader = $authHeader->getValue();
                 $token = $authHeader;
@@ -506,8 +498,8 @@ class Beneficiarios extends ResourceController
             ]
         ];
         if ($this->validate($rules, $messages)) {
-            $key = $this->getKey();
-            $authHeader = $this->request->getHeader("Authorization");
+            $key = getKey();
+            $authHeader = $this->request->header("Authorization");
             if ($authHeader->getValue() != null) {
                 $authHeader = $authHeader->getValue();
                 $token = $authHeader;
@@ -600,7 +592,7 @@ class Beneficiarios extends ResourceController
         if (!$this->validate($rules, $messages)) {
             return $this->fail($this->validator->getErrors(), 422, 'Datos faltantes');
         } else {
-            $authHeader = $this->request->getHeader("Authorization");
+            $authHeader = $this->request->header("Authorization");
             if ($authHeader->getValue() != null) {
                 $authHeader = $authHeader->getValue();
                 try {
@@ -649,7 +641,7 @@ class Beneficiarios extends ResourceController
         if (!$this->validate($rules, $messages)) {
             return $this->fail($this->validator->getErrors(), 422, 'Datos faltantes');
         } else {
-            $authHeader = $this->request->getHeader("Authorization");
+            $authHeader = $this->request->header("Authorization");
             if ($authHeader->getValue() != null) {
                 $authHeader = $authHeader->getValue();
                 try {

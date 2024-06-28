@@ -24,18 +24,18 @@ use Endroid\QrCode\ErrorCorrectionLevel;
 use Endroid\QrCode\QrCode;
 use Endroid\QrCode\RoundBlockSizeMode;
 use Endroid\QrCode\Writer\PngWriter;
+use Config\Services;
 
+helper('jwt');
 helper("date");
 
 class Usuarios extends ResourceController
 {
-    private function getKey()
-    {
-        return "my_application_secret";
-    }
+
 
     public function login()
     {
+        // dd(getKey());
         $rules = [
             "usuario" => "required",
             "password" => "required",
@@ -56,7 +56,7 @@ class Usuarios extends ResourceController
             $modelo_usuario = new Usuarios_model();
             $datos_usuario = $modelo_usuario->login(strtoupper(trim($this->request->getVar("usuario"))), strtoupper(trim($this->request->getVar("password"))));
             if (!empty($datos_usuario)) {
-                $key = $this->getKey();
+                $key = getKey();
                 $iat = time(); // current timestamp value
                 $nbf = $iat;
                 $exp = $iat + 7200;
@@ -92,8 +92,8 @@ class Usuarios extends ResourceController
 
     public function verificar_token()
     {
-        $key = $this->getKey();
-        $authHeader = $this->request->getHeader("Authorization");
+        $key = getKey();
+        $authHeader = $this->request->header("Authorization");
         if ($authHeader->getValue() != null) {
             $authHeader = $authHeader->getValue();
             $token = $authHeader;
@@ -139,25 +139,32 @@ class Usuarios extends ResourceController
 
     public function obtener_municipios()
     {
-        $key = $this->getKey();
-        $authHeader = $this->request->getHeader("Authorization");
-        if ($authHeader->getValue() != null) {
-            $authHeader = $authHeader->getValue();
-            $token = $authHeader;
-            try {
-                $decoded = JWT::decode($token, new Key($key, 'HS256'));
-                $modelo_municipios = new Municipios_model;
-                $municipios = $modelo_municipios->obtener_lista_municipios();
-                $response = [
-                    'municipios' => $municipios,
-                ];
-                return $this->respondCreated($response);
-            } catch (Exception $ex) {
-                return $this->failUnauthorized($ex);
-            }
+        $token = getAuthorizationToken($this->request);
+        if ($token != NULL) {
+            $decoded = validateJWT($token);
         } else {
             return $this->failUnauthorized("Token no enviado", 'Unauthorized');
         }
+        dd($token);
+        // $key = getKey();
+        // $authHeader = $this->request->header("Authorization");
+        // if ($authHeader->getValue() != null) {
+        //     $authHeader = $authHeader->getValue();
+        //     $token = $authHeader;
+        //     try {
+        //         $decoded = JWT::decode($token, new Key($key, 'HS256'));
+        //         $modelo_municipios = new Municipios_model;
+        //         $municipios = $modelo_municipios->obtener_lista_municipios();
+        //         $response = [
+        //             'municipios' => $municipios,
+        //         ];
+        //         return $this->respondCreated($response);
+        //     } catch (Exception $ex) {
+        //         return $this->failUnauthorized($ex);
+        //     }
+        // } else {
+        //     return $this->failUnauthorized("Token no enviado", 'Unauthorized');
+        // }
     }
 
     public function obtener_localidades_por_municipio()
@@ -175,7 +182,7 @@ class Usuarios extends ResourceController
         if (!$this->validate($rules, $messages)) {
             return $this->fail($this->validator->getErrors(), 422, 'Datos faltantes');
         } else {
-            $authHeader = $this->request->getHeader("Authorization");
+            $authHeader = $this->request->header("Authorization");
             if ($authHeader->getValue() != null) {
                 $authHeader = $authHeader->getValue();
                 try {
@@ -196,8 +203,8 @@ class Usuarios extends ResourceController
     }
     public function obtener_listado_alergias()
     {
-        $key = $this->getKey();
-        $authHeader = $this->request->getHeader("Authorization");
+        $key = getKey();
+        $authHeader = $this->request->header("Authorization");
         if ($authHeader->getValue() != null) {
             $authHeader = $authHeader->getValue();
             $token = $authHeader;
@@ -231,7 +238,7 @@ class Usuarios extends ResourceController
         if (!$this->validate($rules, $messages)) {
             return $this->fail($this->validator->getErrors(), 422, 'Datos faltantes');
         } else {
-            $authHeader = $this->request->getHeader("Authorization");
+            $authHeader = $this->request->header("Authorization");
             if ($authHeader->getValue() != null) {
                 $authHeader = $authHeader->getValue();
                 try {
@@ -253,7 +260,7 @@ class Usuarios extends ResourceController
 
     public function obtener_listado_dicapacidades()
     {
-        $authHeader = $this->request->getHeader("Authorization");
+        $authHeader = $this->request->header("Authorization");
         if ($authHeader->getValue() != null) {
             $authHeader = $authHeader->getValue();
             try {

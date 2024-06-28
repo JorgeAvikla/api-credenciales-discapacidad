@@ -62,7 +62,7 @@ class Beneficiarios_model extends Model
     public function obtener_id_por_curp($curp)
     {
         $resultado = $this->select('id_beneficiario, folio, curp')
-            ->where('beneficiarios.curp', $curp)
+            ->where("SHA2(beneficiarios.curp, 256)", $curp)
             ->first();
         return ($resultado != null) ? $resultado : NULL;
     } //End obtener_id_por_curp
