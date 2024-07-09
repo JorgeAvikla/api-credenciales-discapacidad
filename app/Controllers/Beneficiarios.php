@@ -167,7 +167,8 @@ class Beneficiarios extends ResourceController
     {
         $key = getKey();
         $authHeader = $this->request->header("Authorization");
-        if ($authHeader->getValue() != null) {
+
+        if ($authHeader != null) {
             $authHeader = $authHeader->getValue();
             $token = $authHeader;
             try {
@@ -334,7 +335,7 @@ class Beneficiarios extends ResourceController
     {
         $key = getKey();
         $authHeader = $this->request->header("Authorization");
-        if ($authHeader->getValue() != null) {
+        if ($authHeader != null) {
             $authHeader = $authHeader->getValue();
             $token = $authHeader;
             try {
@@ -434,7 +435,7 @@ class Beneficiarios extends ResourceController
         if ($this->validate($rules, $messages)) {
             $key = getKey();
             $authHeader = $this->request->header("Authorization");
-            if ($authHeader->getValue() != null) {
+            if ($authHeader != null) {
                 $authHeader = $authHeader->getValue();
                 $token = $authHeader;
                 try {
@@ -500,7 +501,7 @@ class Beneficiarios extends ResourceController
         if ($this->validate($rules, $messages)) {
             $key = getKey();
             $authHeader = $this->request->header("Authorization");
-            if ($authHeader->getValue() != null) {
+            if ($authHeader != null) {
                 $authHeader = $authHeader->getValue();
                 $token = $authHeader;
                 try {
@@ -593,7 +594,7 @@ class Beneficiarios extends ResourceController
             return $this->fail($this->validator->getErrors(), 422, 'Datos faltantes');
         } else {
             $authHeader = $this->request->header("Authorization");
-            if ($authHeader->getValue() != null) {
+            if ($authHeader != null) {
                 $authHeader = $authHeader->getValue();
                 try {
                     $curp = $this->request->getVar("curp");
@@ -642,7 +643,7 @@ class Beneficiarios extends ResourceController
             return $this->fail($this->validator->getErrors(), 422, 'Datos faltantes');
         } else {
             $authHeader = $this->request->header("Authorization");
-            if ($authHeader->getValue() != null) {
+            if ($authHeader != null) {
                 $authHeader = $authHeader->getValue();
                 try {
                     $curp = $this->request->getVar("curp");

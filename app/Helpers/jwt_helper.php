@@ -1,5 +1,11 @@
 <?php
 
+use Firebase\JWT\JWT;
+use Firebase\JWT\Key;
+
+
+
+
 function getKey()
 {
     return config('JWT')->secretKey;
@@ -19,6 +25,6 @@ function validateJWT($token)
     try {
         return JWT::decode($token, new Key($key, 'HS256'));
     } catch (Exception $ex) {
-        throw new Exception("Token no valido");
+        return null;
     }
 }

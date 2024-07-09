@@ -26,6 +26,7 @@ class Filters extends BaseConfig
         'invalidchars'  => InvalidChars::class,
         'secureheaders' => SecureHeaders::class,
         'cors' => \Fluent\Cors\Filters\CorsFilter::class,
+        // 'cors' => \App\Filters\CorsFilter::class,
     ];
 
     /**

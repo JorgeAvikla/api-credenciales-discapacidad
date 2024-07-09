@@ -145,26 +145,25 @@ class Usuarios extends ResourceController
         } else {
             return $this->failUnauthorized("Token no enviado", 'Unauthorized');
         }
-        dd($token);
-        // $key = getKey();
-        // $authHeader = $this->request->header("Authorization");
-        // if ($authHeader->getValue() != null) {
-        //     $authHeader = $authHeader->getValue();
-        //     $token = $authHeader;
-        //     try {
-        //         $decoded = JWT::decode($token, new Key($key, 'HS256'));
-        //         $modelo_municipios = new Municipios_model;
-        //         $municipios = $modelo_municipios->obtener_lista_municipios();
-        //         $response = [
-        //             'municipios' => $municipios,
-        //         ];
-        //         return $this->respondCreated($response);
-        //     } catch (Exception $ex) {
-        //         return $this->failUnauthorized($ex);
-        //     }
-        // } else {
-        //     return $this->failUnauthorized("Token no enviado", 'Unauthorized');
-        // }
+        $key = getKey();
+        $authHeader = $this->request->header("Authorization");
+        if ($authHeader->getValue() != null) {
+            $authHeader = $authHeader->getValue();
+            $token = $authHeader;
+            try {
+                $decoded = JWT::decode($token, new Key($key, 'HS256'));
+                $modelo_municipios = new Municipios_model;
+                $municipios = $modelo_municipios->obtener_lista_municipios();
+                $response = [
+                    'municipios' => $municipios,
+                ];
+                return $this->respondCreated($response);
+            } catch (Exception $ex) {
+                return $this->failUnauthorized($ex);
+            }
+        } else {
+            return $this->failUnauthorized("Token no enviado", 'Unauthorized');
+        }
     }
 
     public function obtener_localidades_por_municipio()

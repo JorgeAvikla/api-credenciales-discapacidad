@@ -29,6 +29,8 @@ class Beneficiarios_model extends Model
         "telefono_emergencia",
         "alergias",
         "tipo_sangre",
+        "nombre_contacto_emergencia",
+        "telefono_contacto_emergencia",
         "url_fotografia",
         "url_qr",
         "comentarios",
@@ -69,7 +71,7 @@ class Beneficiarios_model extends Model
 
     public function obtener_datos_credencial($id_beneficiario)
     {
-        $resultado = $this->select('beneficiarios.id_beneficiario,IF(beneficiarios.estatus = 1, "Activo","Inactivo") as estatus_beneficiario,beneficiarios.folio, IF(beneficiarios.url_fotografia IS NULL, "",CONCAT("' . base_url() . '",beneficiarios.url_fotografia))as fotografia, CONCAT(beneficiarios.nombre," ",beneficiarios.apellido_paterno," ",beneficiarios.apellido_materno) AS nombre_completo, beneficiarios.curp, CONCAT(beneficiarios.direccion,", ",municipios.nombre,", ",localidades.localidad) AS direccion, IF( beneficiarios.url_qr IS NULL, "", CONCAT("' . base_url() . '",beneficiarios.url_qr))as url_codigo_qr, beneficiarios.telefono_emergencia,IF(beneficiarios.alergias IS NULL, "",beneficiarios.alergias)as alergia, tipo_sangre.nombre as tipo_sangre,')
+        $resultado = $this->select('beneficiarios.id_beneficiario,IF(beneficiarios.estatus = 1, "Activo","Inactivo") as estatus_beneficiario,beneficiarios.folio, IF(beneficiarios.url_fotografia IS NULL, "",CONCAT("' . base_url() . '",beneficiarios.url_fotografia))as fotografia, CONCAT(beneficiarios.nombre," ",beneficiarios.apellido_paterno," ",beneficiarios.apellido_materno) AS nombre_completo, beneficiarios.curp, CONCAT(beneficiarios.direccion,", ",municipios.nombre,", ",localidades.localidad) AS direccion, IF( beneficiarios.url_qr IS NULL, "", CONCAT("' . base_url() . '",beneficiarios.url_qr))as url_codigo_qr, beneficiarios.telefono_emergencia,IF(beneficiarios.alergias IS NULL, "",beneficiarios.alergias)as alergia, tipo_sangre.nombre as tipo_sangre, beneficiarios.nombre_contacto_emergencia,beneficiarios.telefono_contacto_emergencia')
             ->join('tipo_sangre', 'tipo_sangre.id_tipo_sangre = beneficiarios.tipo_sangre')
             ->join('municipios', 'municipios.id_municipio = beneficiarios.id_municipio')
             ->join('localidades', 'localidades.id_localidad = beneficiarios.id_localidad')
