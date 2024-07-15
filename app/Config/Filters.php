@@ -71,8 +71,8 @@ class Filters extends BaseConfig
     public $filters = [
         // ...
         'cors' => [
-            'before' => ['auth/*', 'pruebas/*'],
-            'after' => ['auth/*'],
+            'before' => ['beneficiarios/*'],
+            'after' => ['beneficiarios/*'],
 
         ],
     ];

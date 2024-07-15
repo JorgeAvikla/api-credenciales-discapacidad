@@ -26,6 +26,7 @@ $routes->group("beneficiarios", function ($routes) {
     $routes->post("actualizar_imagen_beneficiario", "Beneficiarios::actualizar_imagen_beneficiario", ['filter' => 'cors']);
     $routes->post("validar_edicion_curp", "Beneficiarios::validar_edicion_curp", ['filter' => 'cors']);
     $routes->put("actualizar_curp", "Beneficiarios::actualizar_curp", ['filter' => 'cors']);
+    $routes->put("actualizar_datos_contacto", "Beneficiarios::actualizar_datos_contacto", ['filter' => 'cors']);
 });
 
 $routes->group("generales", function ($routes) {

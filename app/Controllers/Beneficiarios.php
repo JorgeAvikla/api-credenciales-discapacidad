@@ -341,7 +341,7 @@ class Beneficiarios extends ResourceController
         return $this->respondCreated($response);
     }
 
-    public function obtener_datos_edicion_beneficiario()
+    public function obtener_datos_edicion_beneficiario($id_beneficiario)
     {
         $key = getKey();
         $authHeader = $this->request->header("Authorization");
@@ -351,7 +351,7 @@ class Beneficiarios extends ResourceController
             try {
                 $decoded = JWT::decode($token, new Key($key, 'HS256'));
                 $modelo_beneficiarios = new Beneficiarios_model;
-                $datos_beneficiarios = $modelo_beneficiarios->obtener_datos_beneficiario_para_actualizar($decoded->data->id_beneficiario);
+                $datos_beneficiarios = $modelo_beneficiarios->obtener_datos_beneficiario_para_actualizar($id_beneficiario);
                 $response = [
                     'datos_beneficiario' => $datos_beneficiarios,
                 ];
@@ -672,6 +672,63 @@ class Beneficiarios extends ResourceController
                         return $this->respondCreated($response);
                     } else {
                         return $this->failServerError('Error al actualizar curp :(', 'Internal Server Error');
+                    }
+                } catch (Exception $ex) {
+                    return $this->failUnauthorized($ex);
+                }
+            } else {
+                return $this->failUnauthorized("Token no enviado", 'Unauthorized');
+            }
+        }
+    }
+
+    public function actualizar_datos_contacto()
+    {
+        $rules = [
+            "nombre_contacto" => "required",
+            "telefono_contacto" => "required",
+            "id_beneficiario" => "required",
+        ];
+
+        $messages = [
+            "nombre_contacto" => [
+                "required" => "Nombre requerido",
+            ],
+            "telefono_contacto" => [
+                "required" => "Teléfono requerido",
+            ],
+            "id_beneficiario" => [
+                "required" => "curp requerido",
+            ],
+        ];
+
+        if (!$this->validate($rules, $messages)) {
+            return $this->fail($this->validator->getErrors(), 422, 'Datos faltantes');
+        } else {
+            $authHeader = $this->request->header("Authorization");
+            if ($authHeader != null) {
+                $authHeader = $authHeader->getValue();
+                try {
+                    $nombre = $this->request->getVar("nombre_contacto");
+                    $telefono = $this->request->getVar("telefono_contacto");
+                    $id_beneficiario = $this->request->getVar("id_beneficiario");
+                    $modelo_beneficiarios = new Beneficiarios_model();
+                    $data_contacto = array(
+                        'nombre_contacto_emergencia' => $nombre,
+                        'telefono_contacto_emergencia' => $telefono,
+                    );
+
+                    if ($modelo_beneficiarios->update($id_beneficiario, $data_contacto)) {
+                        $datos_beneficiarios = $modelo_beneficiarios->obtener_datos_beneficiario_para_actualizar($id_beneficiario);
+                        $response = [
+                            'status' => 200,
+                            'error' => false,
+                            'messages' => 'Beneficiario actualizado correctamente',
+                            'data' => $datos_beneficiarios,
+                        ];
+                        return $this->respondCreated($response);
+                    } else {
+                        return $this->failServerError('Error al actualizar datos :(', 'Internal Server Error');
                     }
                 } catch (Exception $ex) {
                     return $this->failUnauthorized($ex);
