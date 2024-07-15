@@ -9,7 +9,7 @@ $routes->get('/', 'Login::index');
 $routes->group("api", function ($routes) {
     $routes->post("register", "User::register");
     $routes->post("login", "Beneficiarios::login");
-    $routes->get("obtener_datos_credencial", "Beneficiarios::datos_credencial");
+    $routes->get("obtener_datos_credencial", "Beneficiarios::obtener_datos_edicion_beneficiario");
     $routes->put("actualizar_token_firebase", "Beneficiarios::actualizar_token_firebase");
 });
 

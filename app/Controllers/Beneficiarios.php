@@ -26,14 +26,14 @@ class Beneficiarios extends ResourceController
     {
         $rules = [
             "folio" => "required",
-            "curp" => "required",
+            "contrasenia" => "required",
         ];
 
         $messages = [
             "folio" => [
                 "required" => "Folio requerido",
             ],
-            "curp" => [
+            "contrasenia" => [
                 "required" => "CURP requerido"
             ],
         ];
@@ -42,7 +42,7 @@ class Beneficiarios extends ResourceController
             return $this->fail($this->validator->getErrors(), 422, 'Unprocessable Entity');
         } else {
             $modelo_beneficiario = new Beneficiarios_model();
-            $datos_usuario = $modelo_beneficiario->obtener_id_por_curp(strtoupper(trim($this->request->getVar("curp"))));
+            $datos_usuario = $modelo_beneficiario->obtener_id_por_curp(strtoupper(trim($this->request->getVar("contrasenia"))));
             if (!empty($datos_usuario)) {
                 if ($this->request->getVar("folio") === $datos_usuario['folio']) {
                     $key = getKey();
@@ -52,7 +52,7 @@ class Beneficiarios extends ResourceController
 
                     $payload = array(
                         "iss" => "DIF_TLAXCALA",
-                        "aud" => "curp",
+                        "aud" => "contrasenia",
                         "iat" => $iat, // issued at
                         "nbf" => $nbf, //not before in seconds
                         "exp" => $exp, // expire time in seconds
@@ -118,15 +118,15 @@ class Beneficiarios extends ResourceController
         }
         $rules = [
             "token_firebase" => "required",
-            "curp" => "required",
+            "contrasenia" => "required",
         ];
 
         $messages = [
             "token_firebase" => [
                 "required" => "token_firebase requerido",
             ],
-            "curp" => [
-                "required" => "CURP requerido"
+            "contrasenia" => [
+                "required" => "Contraseña requerido"
             ],
         ];
 
@@ -203,8 +203,9 @@ class Beneficiarios extends ResourceController
             "telefono_emergencia" => "required",
             "alergias" => "required",
             "tipo_sangre" => "required",
-            'imagen_beneficiario' => 'uploaded[imagen_beneficiario]|max_size[imagen_beneficiario,1024]|ext_in[imagen_beneficiario,jpg,png]'
-
+            'imagen_beneficiario' => 'uploaded[imagen_beneficiario]|max_size[imagen_beneficiario,1024]|ext_in[imagen_beneficiario,jpg,png]',
+            "nombre_contacto_emergencia" => "required",
+            "telefono_contacto_emergencia" => "required"
         ];
         $messages = [
             "nombre" => [
@@ -255,8 +256,14 @@ class Beneficiarios extends ResourceController
                 "max_length" => "Alergia muy larga",
             ],
             "tipo_sangre" => [
-                "required" => "Sipo sangre requerida",
+                "required" => "Tipo sangre requerida",
                 "integer" => "ID incorrecto",
+            ],
+            "nombre_contacto_emergencia" => [
+                "required" => "Nombre de contacto requerido",
+            ],
+            "telefono_contacto_emergencia" => [
+                "required" => "telefono de contacto requerido",
             ],
         ];
         if (!$this->validate($rules, $messages)) {
@@ -286,7 +293,10 @@ class Beneficiarios extends ResourceController
                     "id_discapacidad" => $this->request->getVar("id_discapacidad"),
                     "telefono_emergencia" => trim($this->request->getVar("telefono_emergencia")),
                     "alergias" => ucfirst(trim($this->request->getVar("alergias"))),
+                    "comentarios" => ucfirst(trim($this->request->getVar("comentarios"))),
                     "tipo_sangre" => $this->request->getVar("tipo_sangre"),
+                    "nombre_contacto_emergencia" => $this->request->getVar("nombre_contacto_emergencia"),
+                    "telefono_contacto_emergencia" => $this->request->getVar("telefono_contacto_emergencia"),
                     "url_fotografia" => $ruta_imagen,
                 ];
                 if ($modelo_beneficiario->insert($data_insertar)) {
@@ -331,7 +341,7 @@ class Beneficiarios extends ResourceController
         return $this->respondCreated($response);
     }
 
-    public function obtener_datos_edicion_beneficiario($id_benficiario)
+    public function obtener_datos_edicion_beneficiario()
     {
         $key = getKey();
         $authHeader = $this->request->header("Authorization");
@@ -341,7 +351,7 @@ class Beneficiarios extends ResourceController
             try {
                 $decoded = JWT::decode($token, new Key($key, 'HS256'));
                 $modelo_beneficiarios = new Beneficiarios_model;
-                $datos_beneficiarios = $modelo_beneficiarios->obtener_datos_beneficiario_para_actualizar($id_benficiario);
+                $datos_beneficiarios = $modelo_beneficiarios->obtener_datos_beneficiario_para_actualizar($decoded->data->id_beneficiario);
                 $response = [
                     'datos_beneficiario' => $datos_beneficiarios,
                 ];
@@ -367,7 +377,7 @@ class Beneficiarios extends ResourceController
             "id_localidad" => "required|integer",
             "id_discapacidad" => "required",
             "telefono_emergencia" => "required|min_length[10]|max_length[30]",
-            "alergias" => "required|min_length[10]|max_length[200]",
+            "alergias" => "required",
             "tipo_sangre" => "required|integer",
             "comentarios" => "required",
             "id_beneficiario" => "required",
@@ -418,8 +428,6 @@ class Beneficiarios extends ResourceController
             ],
             "alergias" => [
                 "required" => "Alergia requerida",
-                "min_length" => "Alergia muy corta",
-                "max_length" => "Alergia muy larga",
             ],
             "tipo_sangre" => [
                 "required" => "Sipo sangre requerida",

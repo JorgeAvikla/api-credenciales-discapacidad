@@ -102,7 +102,8 @@ class Beneficiarios_model extends Model
     {
         $resultado = $this->select('beneficiarios.nombre, beneficiarios.apellido_paterno, beneficiarios.apellido_materno,
             beneficiarios.curp, beneficiarios.direccion,beneficiarios.id_municipio, beneficiarios.id_localidad,beneficiarios.telefono_emergencia,
-            beneficiarios.alergias, beneficiarios.tipo_sangre, beneficiarios.comentarios, tipo_discapacidad.id_tipo_discapacidad, 
+            beneficiarios.alergias, beneficiarios.tipo_sangre, beneficiarios.comentarios, beneficiarios.nombre_contacto_emergencia,beneficiarios.telefono_contacto_emergencia,
+            tipo_discapacidad.id_tipo_discapacidad, 
             CONCAT("' . base_url() . '",beneficiarios.url_fotografia)as url_fotografia, municipios.nombre as nombre_municipio, 
             localidades.localidad as nombre_localidad, tipo_discapacidad.nombre_discapacidad, 
             IF(tipo_sangre.id_tipo_sangre = 9, "No_disponible",tipo_sangre.nombre) as nombre_tipo_sangre,
